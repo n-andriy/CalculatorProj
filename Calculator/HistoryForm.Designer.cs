@@ -82,9 +82,9 @@
             this.headerLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.headerLabel.Location = new System.Drawing.Point(103, 9);
             this.headerLabel.Name = "headerLabel";
-            this.headerLabel.Size = new System.Drawing.Size(147, 24);
+            this.headerLabel.Size = new System.Drawing.Size(119, 24);
             this.headerLabel.TabIndex = 1;
-            this.headerLabel.Text = "Last 10 actions";
+            this.headerLabel.Text = "Last actions";
             // 
             // HistoryForm
             // 

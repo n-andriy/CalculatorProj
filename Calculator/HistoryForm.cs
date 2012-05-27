@@ -14,6 +14,20 @@ namespace Calculator
         public HistoryForm(string historyStr)
         {
             InitializeComponent();
+            
+            if (String.IsNullOrEmpty(historyStr))
+            {
+                return;
+            }
+
+            var calcActions = historyStr.Split(';');
+
+            for (int i = 0; i < calcActions.Length - 1; i++)
+            {
+                dataGridView1.Rows.Add(Convert.ToString(i + 1),
+                                       calcActions[i].Substring(0, calcActions[i].LastIndexOf('=')), // action (before sign '=')
+                                       calcActions[i].Substring(calcActions[i].IndexOf('=') + 1));   // result (after sign '=')
+            }
         }
     }
 }

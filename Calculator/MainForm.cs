@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Calculator
@@ -12,9 +7,8 @@ namespace Calculator
     public partial class MainForm : Form
     {
         private bool _isFirst = true;
-        //private bool _isSecond = false;
         private string _operationType;
-        private string _memoryCell;
+        private string _historyText; // action history in format: 2+3=5;3*6=18;
         private string _firstOperand;
         private string _secondOperand;
 
@@ -29,18 +23,13 @@ namespace Calculator
             if (_isFirst)
             {
                 operandLabel.Text = number;
+                _historyText += number;
                 _isFirst = false;
                 return;
             }
 
-            //if (_isSecond)
-            //{
-            //    secondOperandLabel.Text = number;
-            //    _isSecond = false;
-            //    return;
-            //}
-
             operandLabel.Text += number;
+            _historyText += number;
         }
 
         private void ChangeOperationType(string type)
@@ -51,9 +40,10 @@ namespace Calculator
             _firstOperand = operandLabel.Text;
             
             operandLabel.Text += String.Format(" {0} ", type);
+            _historyText += String.Format(" {0} ", type);
         }
 
-        #region Button click handlers
+        #region Number and letter buttons click handlers
         private void zeroButton_Click(object sender, EventArgs e)
         {
             DisplayNumber("0");
@@ -103,6 +93,36 @@ namespace Calculator
         {
             DisplayNumber("9");
         }
+
+        private void aButton_Click(object sender, EventArgs e)
+        {
+            DisplayNumber("A");
+        }
+
+        private void bButton_Click(object sender, EventArgs e)
+        {
+            DisplayNumber("B");
+        }
+
+        private void cButton_Click(object sender, EventArgs e)
+        {
+            DisplayNumber("C");
+        }
+
+        private void dButton_Click(object sender, EventArgs e)
+        {
+            DisplayNumber("D");
+        }
+
+        private void eButton_Click(object sender, EventArgs e)
+        {
+            DisplayNumber("E");
+        }
+
+        private void fButton_Click(object sender, EventArgs e)
+        {
+            DisplayNumber("F");
+        }
         #endregion
 
         private void plusButton_Click(object sender, EventArgs e)
@@ -135,13 +155,16 @@ namespace Calculator
             resultLabel.Text = "0";
             operandLabel.Text = "0";
             _isFirst = true;
-            //_isSecond = false;
+            _historyText = "";
         }
 
         private void binRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (binRadioButton.Checked)
             {
+                // Converting resultLabel value to bin
+                resultLabel.Text = MathCalcLibrary.ConvertValueToBin(resultLabel.Text);
+
                 MathCalcLibrary.calcMode = CalcMode.BinCalculation;
 
                 twoButton.Enabled = false;
@@ -164,7 +187,7 @@ namespace Calculator
 
         private void memClearButton_Click(object sender, EventArgs e)
         {
-            _memoryCell = "";
+            //_memoryCell = "";
         }
 
         private void saveMemoryButton_Click(object sender, EventArgs e)
@@ -174,7 +197,11 @@ namespace Calculator
 
         private void lastSymbolButton_Click(object sender, EventArgs e)
         {
-
+            var removeResult = MathCalcLibrary.RemoveLastSymbol(operandLabel.Text);
+            if (removeResult != "")
+            {
+                operandLabel.Text = removeResult;
+            }
         }
 
         private void SetVisibleOfElements()
@@ -188,20 +215,23 @@ namespace Calculator
             eightButton.Enabled = true;
             nineButton.Enabled = true;
             factButton.Enabled = true;
-            aButton.Enabled = true;
-            bButton.Enabled = true;
-            cButton.Enabled = true;
-            dButton.Enabled = true;
-            eButton.Enabled = true;
-            fButton.Enabled = true;
         }
 
         private void DecRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (DecRadioButton.Checked)
             {
+                // Converting resultLabel value to dec
+                resultLabel.Text = MathCalcLibrary.ConvertValueToDec(resultLabel.Text);
+
                 MathCalcLibrary.calcMode = CalcMode.DecCalculation;
                 SetVisibleOfElements();
+                aButton.Enabled = false;
+                bButton.Enabled = false;
+                cButton.Enabled = false;
+                dButton.Enabled = false;
+                eButton.Enabled = false;
+                fButton.Enabled = false;
             }
         }
 
@@ -209,8 +239,17 @@ namespace Calculator
         {
             if (HexRadioButton.Checked)
             {
+                // Converting resultLabel value to hex
+                resultLabel.Text = MathCalcLibrary.ConvertValueToHex(resultLabel.Text);
+
                 MathCalcLibrary.calcMode = CalcMode.HexCalculation;
                 SetVisibleOfElements();
+                aButton.Enabled = true;
+                bButton.Enabled = true;
+                cButton.Enabled = true;
+                dButton.Enabled = true;
+                eButton.Enabled = true;
+                fButton.Enabled = true;
             }
         }
 
@@ -223,26 +262,41 @@ namespace Calculator
         {
             // Reading the second operand
             _secondOperand = operandLabel.Text.Substring(operandLabel.Text.LastIndexOf(' ') + 1);
-
+           
             // Choosing operation type
             switch (_operationType)
             {
                 case "+":
                     resultLabel.Text = MathCalcLibrary.Sum(_firstOperand, _secondOperand);
+                    _historyText += "=" + resultLabel.Text + ";";
                     break;
+                
                 case "-":
-                    //resultLabel.Text = MathCalcLibrary.Substract(_firstOperand, _secondOperand).ToString();
+                    resultLabel.Text = MathCalcLibrary.Substract(_firstOperand, _secondOperand);
+                    _historyText += "=" + resultLabel.Text + ";";
                     break;
+                
                 case "/":
+                    try
+                    {
+                        resultLabel.Text = MathCalcLibrary.Dividing(_firstOperand, _secondOperand);
+                        _historyText += "=" + resultLabel.Text + ";";
+                    }
+                    catch(DivideByZeroException)
+                    {
+                        MessageBox.Show("Attempted divide by zero", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        operandLabel.Text = "0";
+                    }
+
                     break;
+                
                 case "*":
+                    resultLabel.Text = MathCalcLibrary.Multiplication(_firstOperand, _secondOperand);
+                    _historyText += "=" + resultLabel.Text + ";";
                     break;
             }
 
             _isFirst = true;
-
-            // Saving results to history
-
         }
 
         private void inverseDivButton_Click(object sender, EventArgs e)
@@ -260,7 +314,42 @@ namespace Calculator
 
         private void historyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //new HistoryForm().Show();
+            new HistoryForm(_historyText).ShowDialog();
+        }      
+
+        private void romanConvertButton_Click(object sender, EventArgs e)
+        {
+            // checking an empty value
+            if (String.IsNullOrEmpty(initialValueTextBox.Text))
+            {
+                MessageBox.Show("You must enter a value", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                initialValueTextBox.Focus();
+                return;
+            }
+
+            // checking only digits value
+            var regex = new Regex("^[0-9]+$");
+            if (!regex.IsMatch(initialValueTextBox.Text))
+            {
+                MessageBox.Show("You must enter only digits", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                initialValueTextBox.Text = "";
+                initialValueTextBox.Focus();
+                return;
+            }
+
+            convertedValueTextBox.Text = MathCalcLibrary.ConvertIntToRoman(int.Parse(initialValueTextBox.Text));
+        }
+
+        private void romanClearButton_Click(object sender, EventArgs e)
+        {
+            initialValueTextBox.Text = "";
+            convertedValueTextBox.Text = "";
+            initialValueTextBox.Focus();
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new AboutForm().ShowDialog();
         }
     }
 }

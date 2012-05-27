@@ -1,8 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Calculator;
+﻿using Calculator;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CalculatorTestProject
@@ -20,6 +16,32 @@ namespace CalculatorTestProject
         public void ConvertIntToRomanZeroTest()
         {
             Assert.AreEqual("", MathCalcLibrary.ConvertIntToRoman(0));
+        }
+
+        [TestMethod]
+        public void SumCalc()
+        {
+            MathCalcLibrary.calcMode = CalcMode.BinCalculation;
+            Assert.AreEqual("1011", MathCalcLibrary.Sum("1001", "0010"));
+
+            MathCalcLibrary.calcMode = CalcMode.DecCalculation;
+            Assert.AreEqual("234", MathCalcLibrary.Sum("140", "94"));
+
+            MathCalcLibrary.calcMode = CalcMode.HexCalculation;
+            Assert.AreEqual("D9", MathCalcLibrary.Sum("CD", "C"));
+        }
+
+        [TestMethod]
+        public void SubtractCalc()
+        {
+            MathCalcLibrary.calcMode = CalcMode.BinCalculation;
+            Assert.AreEqual("1011", MathCalcLibrary.Sum("1001", "0010"));
+
+            MathCalcLibrary.calcMode = CalcMode.DecCalculation;
+            Assert.AreEqual("234", MathCalcLibrary.Sum("140", "94"));
+
+            MathCalcLibrary.calcMode = CalcMode.HexCalculation;
+            Assert.AreEqual("D9", MathCalcLibrary.Sum("CD", "C"));
         }
 
         [TestMethod]
@@ -44,13 +66,6 @@ namespace CalculatorTestProject
         public void InverseDivideCalc()
         {
             Assert.AreEqual(0.125, MathCalcLibrary.InverseDivide(8));
-        }
-
-        [TestMethod]
-        public void BinSumCalc()
-        {
-            MathCalcLibrary.calcMode = CalcMode.BinCalculation;
-            //Assert.AreEqual(1001, MathCalcLibrary.Sum(Convert, "0010"));
         }
     }
 }
