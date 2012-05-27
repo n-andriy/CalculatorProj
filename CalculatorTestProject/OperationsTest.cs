@@ -21,5 +21,36 @@ namespace CalculatorTestProject
         {
             Assert.AreEqual("", MathCalcLibrary.ConvertIntToRoman(0));
         }
+
+        [TestMethod]
+        public void ConvertDecToBin()
+        {
+            Assert.AreEqual("1101", MathCalcLibrary.ConvertDecToBin(13));
+        }
+
+        [TestMethod]
+        public void FactorialCalc()
+        {
+            Assert.AreEqual(120, MathCalcLibrary.Factorial(5));
+        }
+
+        [TestMethod]
+        public void SqrtCalc()
+        {
+            Assert.AreEqual(11, MathCalcLibrary.GetSqrt(121));
+        }
+
+        [TestMethod]
+        public void InverseDivideCalc()
+        {
+            Assert.AreEqual(0.125, MathCalcLibrary.InverseDivide(8));
+        }
+
+        [TestMethod]
+        public void BinSumCalc()
+        {
+            MathCalcLibrary.calcMode = CalcMode.BinCalculation;
+            //Assert.AreEqual(1001, MathCalcLibrary.Sum(Convert, "0010"));
+        }
     }
 }
